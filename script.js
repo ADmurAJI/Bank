@@ -64,3 +64,40 @@ const inputTransferAmount = document.querySelector(".form__input--amount");
 const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
+
+const displayTransactions = function (transactions) {
+  containerTransactions.innerHTML = "";
+  transactions.forEach(function (trans, index) {
+    const transType = trans > 0 ? "deposit" : "withdrawal";
+
+    const transactionRow = `
+    <div class="transactions__row">
+          <div class="transactions__type transactions__type--${transType}">
+            ${index + 1} ${transType}
+          </div>
+          <div class="transactions__date">2 дня назад</div>
+          <div class="transactions__value">${trans}$</div>
+        </div>
+    `;
+    containerTransactions.insertAdjacentHTML("afterbegin", transactionRow);
+  });
+};
+displayTransactions(account1.transactions);
+
+const createNicknames = function (accs) {
+  accs.forEach(function (acc) {
+    acc.nickname = acc.userName
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word[0])
+      .join("");
+  });
+};
+
+createNicknames(accounts);
+
+const displayBalance = function (transactions) {
+  const balance = transactions.reduce((acc, trans) => acc + trans, 0);
+  labelBalance.textContent = `${balance}$`;
+};
+displayBalance(account1.transactions);
