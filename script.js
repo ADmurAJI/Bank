@@ -101,3 +101,17 @@ const displayBalance = function (transactions) {
   labelBalance.textContent = `${balance}$`;
 };
 displayBalance(account1.transactions);
+
+const displayTotal = function (transactions) {
+  const depositesTotal = transactions
+    .filter((trans) => trans > 0)
+    .reduce((acc, trans) => acc + trans, 0);
+  labelSumIn.textContent = `${depositesTotal}$`;
+
+  const withdrawalsTotal = transactions
+    .filter((trans) => trans < 0)
+    .reduce((acc, trans) => acc + trans, 0);
+  labelSumOut.textContent = `${withdrawalsTotal}$`;
+};
+
+displayTotal(account1.transactions);
