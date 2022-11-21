@@ -100,25 +100,63 @@ const displayBalance = function (transactions) {
   const balance = transactions.reduce((acc, trans) => acc + trans, 0);
   labelBalance.textContent = `${balance}$`;
 };
-displayBalance(account1.transactions);
+// displayBalance(account1.transactions);
 
-const displayTotal = function (transactions) {
-  const depositesTotal = transactions
+const displayTotal = function (account) {
+  const depositesTotal = account.transactions
     .filter((trans) => trans > 0)
     .reduce((acc, trans) => acc + trans, 0);
   labelSumIn.textContent = `${depositesTotal}$`;
 
-  const withdrawalsTotal = transactions
+  const withdrawalsTotal = account.transactions
     .filter((trans) => trans < 0)
     .reduce((acc, trans) => acc + trans, 0);
   labelSumOut.textContent = `${withdrawalsTotal}$`;
 
-  const interestTotal = transactions
+  const interestTotal = account.transactions
     .filter((trans) => trans > 0)
-    .map((depos) => (depos * 1.1) / 100)
+    .map((depos) => (depos * account.interest) / 100)
     .filter((interest) => interest >= 5)
     .reduce((acc, interest) => acc + interest, 0);
   labelSumInterest.textContent = `${interestTotal}$`;
 };
 
-displayTotal(account1.transactions);
+// displayTotal(account1.transactions);
+
+let currentAccount;
+
+btnLogin.addEventListener("click", function (e) {
+  e.preventDefault();
+  currentAccount = accounts.find(
+    (accounts) => accounts.nickname === inputLoginUsername.value
+  );
+
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // Обновить UI
+
+    containerApp.style.opacity = 100;
+
+    labelWelcome.textContent = `Добро пожаловать, ${
+      currentAccount.userName.split(" ")[0]
+    }!`;
+
+    // Очистить ввод
+
+    inputLoginUsername.value = "";
+    inputLoginPin.value = "";
+    inputLoginUsername.blur();
+    inputLoginPin.blur();
+
+    // Отобразить транзакции
+
+    displayTransactions(currentAccount.transactions);
+
+    // Отобразить баланс
+
+    displayBalance(currentAccount.transactions);
+
+    // Отобразить итого
+
+    displayTotal(currentAccount);
+  }
+});
