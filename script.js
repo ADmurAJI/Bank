@@ -112,6 +112,13 @@ const displayTotal = function (transactions) {
     .filter((trans) => trans < 0)
     .reduce((acc, trans) => acc + trans, 0);
   labelSumOut.textContent = `${withdrawalsTotal}$`;
+
+  const interestTotal = transactions
+    .filter((trans) => trans > 0)
+    .map((depos) => (depos * 1.1) / 100)
+    .filter((interest) => interest >= 5)
+    .reduce((acc, interest) => acc + interest, 0);
+  labelSumInterest.textContent = `${interestTotal}$`;
 };
 
 displayTotal(account1.transactions);
