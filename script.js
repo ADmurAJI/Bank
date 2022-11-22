@@ -96,8 +96,9 @@ const createNicknames = function (accs) {
 
 createNicknames(accounts);
 
-const displayBalance = function (transactions) {
-  const balance = transactions.reduce((acc, trans) => acc + trans, 0);
+const displayBalance = function (account) {
+  const balance = account.transactions.reduce((acc, trans) => acc + trans, 0);
+  account.balance = balance;
   labelBalance.textContent = `${balance}$`;
 };
 // displayBalance(account1.transactions);
@@ -153,10 +154,23 @@ btnLogin.addEventListener("click", function (e) {
 
     // Отобразить баланс
 
-    displayBalance(currentAccount.transactions);
+    displayBalance(currentAccount);
 
     // Отобразить итого
 
     displayTotal(currentAccount);
   }
+});
+
+// Перевести деньги
+
+btnTransfer.addEventListener("click", function (e) {
+  e.preventDefault();
+  const recipienNicname = inputTransferTo.value;
+  const recipienAccount = accounts.find(
+    (account) => account.nickname === recipienNicname
+  );
+  const transferAmount = Number(inputTransferAmount.value);
+  console.log(recipienAccount);
+  console.log(transferAmount);
 });
