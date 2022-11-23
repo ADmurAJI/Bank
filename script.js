@@ -65,6 +65,8 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
+// Функции
+
 const displayTransactions = function (transactions) {
   containerTransactions.innerHTML = "";
   transactions.forEach(function (trans, index) {
@@ -122,9 +124,25 @@ const displayTotal = function (account) {
   labelSumInterest.textContent = `${interestTotal}$`;
 };
 
+const updateUi = function (currentAccount) {
+  // Отобразить транзакции
+
+  displayTransactions(currentAccount.transactions);
+
+  // Отобразить баланс
+
+  displayBalance(currentAccount);
+
+  // Отобразить итого
+
+  displayTotal(currentAccount);
+};
+
 // displayTotal(account1.transactions);
 
 let currentAccount;
+
+// События
 
 btnLogin.addEventListener("click", function (e) {
   e.preventDefault();
@@ -148,17 +166,7 @@ btnLogin.addEventListener("click", function (e) {
     inputLoginUsername.blur();
     inputLoginPin.blur();
 
-    // Отобразить транзакции
-
-    displayTransactions(currentAccount.transactions);
-
-    // Отобразить баланс
-
-    displayBalance(currentAccount);
-
-    // Отобразить итого
-
-    displayTotal(currentAccount);
+    updateUi(currentAccount);
   }
 });
 
@@ -171,6 +179,41 @@ btnTransfer.addEventListener("click", function (e) {
     (account) => account.nickname === recipienNicname
   );
   const transferAmount = Number(inputTransferAmount.value);
-  console.log(recipienAccount);
-  console.log(transferAmount);
+
+  // Очистить ввод
+
+  inputTransferAmount.value = "";
+  inputTransferTo.value = "";
+
+  if (
+    transferAmount > 0 &&
+    transferAmount <= currentAccount.balance &&
+    recipienAccount &&
+    currentAccount.nickname !== recipienAccount?.nickname
+  ) {
+    currentAccount.transactions.push(-transferAmount);
+    recipienAccount.transactions.push(transferAmount);
+    updateUi(currentAccount);
+  }
+});
+
+// Закрыть счёт
+
+btnClose.addEventListener("click", function (e) {
+  e.preventDefault();
+  if (
+    inputCloseUsername.value === currentAccount.nickname &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    const currentAccountIndex = accounts.findIndex(
+      (account) => account.nickname === currentAccount.nickname
+    );
+    accounts.splice(currentAccountIndex, 1);
+
+    containerApp.style.opacity = 0;
+    labelWelcome.textContent = "Войдите в свой аккаунт";
+  }
+
+  inputClosePin.value = "";
+  inputCloseUsername.value = "";
 });
