@@ -67,9 +67,18 @@ const inputClosePin = document.querySelector(".form__input--pin");
 
 // Функции
 
-const displayTransactions = function (transactions) {
+// Показать транзакции
+
+const displayTransactions = function (transactions, sort = false) {
   containerTransactions.innerHTML = "";
-  transactions.forEach(function (trans, index) {
+
+  // Сортировать транзакции
+
+  const transacs = sort
+    ? transactions.slice().sort((x, y) => x - y)
+    : transactions;
+
+  transacs.forEach(function (trans, index) {
     const transType = trans > 0 ? "deposit" : "withdrawal";
 
     const transactionRow = `
@@ -86,6 +95,8 @@ const displayTransactions = function (transactions) {
 };
 displayTransactions(account1.transactions);
 
+// Добавить никнейм в аккаунт
+
 const createNicknames = function (accs) {
   accs.forEach(function (acc) {
     acc.nickname = acc.userName
@@ -97,6 +108,8 @@ const createNicknames = function (accs) {
 };
 
 createNicknames(accounts);
+
+// Показать баланс
 
 const displayBalance = function (account) {
   const balance = account.transactions.reduce((acc, trans) => acc + trans, 0);
@@ -234,4 +247,14 @@ btnClose.addEventListener("click", function (e) {
 
   inputClosePin.value = "";
   inputCloseUsername.value = "";
+});
+
+// Сортировать транзакции
+
+let transactionsSorted = false;
+
+btnSort.addEventListener("click", function (e) {
+  e.preventDefault();
+  displayTransactions(currentAccount.transactions, !transactionsSorted);
+  transactionsSorted = !transactionsSorted;
 });
