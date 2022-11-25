@@ -156,13 +156,18 @@ const displayTransactions = function (account, sort = false) {
     const date = new Date(account.transactionsDates[index]);
     const transDate = formatTransactionDate(date, account.locale);
 
+    const formattedTrans = new Intl.NumberFormat(account.locale, {
+      style: "currency",
+      currency: account.currency,
+    }).format(trans);
+
     const transactionRow = `
     <div class="transactions__row">
           <div class="transactions__type transactions__type--${transType}">
             ${index + 1} ${transType}
           </div>
           <div class="transactions__date">${transDate}</div>
-          <div class="transactions__value">${trans.toFixed(2)}$</div>
+          <div class="transactions__value">${formattedTrans}</div>
         </div>
     `;
     containerTransactions.insertAdjacentHTML("afterbegin", transactionRow);
