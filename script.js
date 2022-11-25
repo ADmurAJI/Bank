@@ -140,6 +140,33 @@ const formatTransactionDate = function (date, locale) {
   return new Intl.DateTimeFormat(locale).format(date);
 };
 
+// Таймер
+
+const startLogoutTimer = function () {
+  const logOutTimerCallbak = function () {
+    const minutes = String(Math.trunc(time / 60)).padStart(2, "0");
+    const seconds = String(time % 60).padStart(2, "0");
+    // В каждом выводе показывать остаток времени
+    labelTimer.textContent = `${minutes}:${seconds}`;
+
+    // Выйти из приложения после истечения времени
+    if (time === 0) {
+      clearInterval(logOutTimer);
+      containerApp.style.opacity = 0;
+      labelWelcome.textContent = "Войдите в свой аккаунт";
+    }
+    time--;
+  };
+
+  // Установить время выхода
+  let time = 300;
+  // Выводить таймер каждую секунду
+  logOutTimerCallbak();
+  const logOutTimer = setInterval(logOutTimerCallbak, 1000);
+
+  return logOutTimer;
+};
+
 // Форматировать транзакции
 
 const formatCurrency = function (value, locale, currency) {
@@ -255,11 +282,11 @@ const updateUi = function (account) {
   displayTotal(account);
 };
 
-let currentAccount;
-
-// Всегда залогинен
+let currentAccount, currentLogOutTimer;
 
 // События
+
+// Вход в аккаунт
 
 btnLogin.addEventListener("click", function (e) {
   e.preventDefault();
@@ -296,6 +323,11 @@ btnLogin.addEventListener("click", function (e) {
     inputLoginPin.value = "";
     inputLoginUsername.blur();
     inputLoginPin.blur();
+    // Проверяем существование таймера
+
+    if (currentLogOutTimer) clearInterval(currentLogOutTimer);
+
+    currentLogOutTimer = startLogoutTimer();
 
     updateUi(currentAccount);
   }
@@ -333,6 +365,11 @@ btnTransfer.addEventListener("click", function (e) {
     recipienAccount.transactionsDates.push(new Date());
 
     updateUi(currentAccount);
+
+    // Обновить таймер
+
+    clearInterval(currentLogOutTimer);
+    currentLogOutTimer = startLogoutTimer();
   }
 });
 
@@ -348,11 +385,17 @@ btnLoan.addEventListener("click", function (e) {
       (trans) => trans >= (loanAmount * 10) / 100
     )
   ) {
-    currentAccount.transactions.push(loanAmount);
-    currentAccount.transactionsDates.push(new Date());
-    updateUi(currentAccount);
+    setTimeout(function () {
+      currentAccount.transactions.push(loanAmount);
+      currentAccount.transactionsDates.push(new Date());
+      updateUi(currentAccount);
+    }, 5000);
   }
   inputLoanAmount.value = "";
+  // Обновить таймер
+
+  clearInterval(currentLogOutTimer);
+  currentLogOutTimer = startLogoutTimer();
 });
 
 // Закрыть счёт
@@ -384,4 +427,9 @@ btnSort.addEventListener("click", function (e) {
   e.preventDefault();
   displayTransactions(currentAccount, !transactionsSorted);
   transactionsSorted = !transactionsSorted;
+
+  // Обновить таймер
+
+  clearInterval(currentLogOutTimer);
+  currentLogOutTimer = startLogoutTimer();
 });
