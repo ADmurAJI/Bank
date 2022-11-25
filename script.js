@@ -8,14 +8,14 @@ const account1 = {
   interest: 1.5,
   pin: 1111,
   transactionsDates: [
-    "2020-10-02T14:43:31.074Z",
-    "2020-10-29T11:24:19.761Z",
-    "2020-11-15T10:45:23.907Z",
-    "2021-01-22T12:17:46.255Z",
-    "2021-02-12T15:14:06.486Z",
-    "2021-03-09T11:42:26.371Z",
-    "2021-05-21T07:43:59.331Z",
-    "2021-06-22T15:21:20.814Z",
+    "2021-10-02T14:43:31.074Z",
+    "2021-10-29T11:24:19.761Z",
+    "2021-11-15T10:45:23.907Z",
+    "2022-11-21T12:17:46.255Z",
+    "2022-11-22T15:14:06.486Z",
+    "2022-11-23T11:42:26.371Z",
+    "2022-11-24T07:43:59.331Z",
+    "2022-11-25T15:21:20.814Z",
   ],
   currency: "USD",
   locale: "en-US",
@@ -27,14 +27,14 @@ const account2 = {
   interest: 1.3,
   pin: 2222,
   transactionsDates: [
-    "2020-10-02T14:43:31.074Z",
-    "2020-10-29T11:24:19.761Z",
-    "2020-11-15T10:45:23.907Z",
-    "2021-01-22T12:17:46.255Z",
-    "2021-02-12T15:14:06.486Z",
-    "2021-03-09T11:42:26.371Z",
-    "2021-05-21T07:43:59.331Z",
-    "2021-06-22T15:21:20.814Z",
+    "2021-10-02T14:43:31.074Z",
+    "2021-10-29T11:24:19.761Z",
+    "2021-11-15T10:45:23.907Z",
+    "2022-01-22T12:17:46.255Z",
+    "2022-02-12T15:14:06.486Z",
+    "2022-03-09T11:42:26.371Z",
+    "2022-05-21T07:43:59.331Z",
+    "2022-06-22T15:21:20.814Z",
   ],
   currency: "UAH",
   locale: "uk-UA",
@@ -46,14 +46,14 @@ const account3 = {
   interest: 0.8,
   pin: 3333,
   transactionsDates: [
-    "2020-10-02T14:43:31.074Z",
-    "2020-10-29T11:24:19.761Z",
-    "2020-11-15T10:45:23.907Z",
-    "2021-01-22T12:17:46.255Z",
-    "2021-02-12T15:14:06.486Z",
-    "2021-03-09T11:42:26.371Z",
-    "2021-05-21T07:43:59.331Z",
-    "2021-06-22T15:21:20.814Z",
+    "2021-10-02T14:43:31.074Z",
+    "2021-10-29T11:24:19.761Z",
+    "2021-11-15T10:45:23.907Z",
+    "2022-01-22T12:17:46.255Z",
+    "2022-02-12T15:14:06.486Z",
+    "2022-03-09T11:42:26.371Z",
+    "2022-05-21T07:43:59.331Z",
+    "2022-06-22T15:21:20.814Z",
   ],
   currency: "RUB",
   locale: "ru-RU",
@@ -65,11 +65,11 @@ const account4 = {
   interest: 1,
   pin: 4444,
   transactionsDates: [
-    "2020-10-02T14:43:31.074Z",
-    "2020-10-29T11:24:19.761Z",
-    "2020-11-15T10:45:23.907Z",
-    "2021-01-22T12:17:46.255Z",
-    "2021-02-12T15:14:06.486Z",
+    "2021-10-02T14:43:31.074Z",
+    "2021-10-29T11:24:19.761Z",
+    "2021-11-15T10:45:23.907Z",
+    "2022-01-22T12:17:46.255Z",
+    "2022-02-12T15:14:06.486Z",
   ],
   currency: "EUR",
   locale: "fr-CA",
@@ -81,11 +81,11 @@ const account5 = {
   interest: 1.1,
   pin: 5555,
   transactionsDates: [
-    "2020-10-02T14:43:31.074Z",
-    "2020-10-29T11:24:19.761Z",
-    "2020-11-15T10:45:23.907Z",
-    "2021-01-22T12:17:46.255Z",
-    "2021-02-12T15:14:06.486Z",
+    "2021-10-02T14:43:31.074Z",
+    "2021-10-29T11:24:19.761Z",
+    "2021-11-15T10:45:23.907Z",
+    "2022-01-22T12:17:46.255Z",
+    "2022-02-12T15:14:06.486Z",
   ],
   currency: "USD",
   locale: "en-US",
@@ -121,6 +121,25 @@ const inputClosePin = document.querySelector(".form__input--pin");
 
 // Функции
 
+// Дата
+
+const formatTransactionDate = function (date) {
+  const day = `${date.getDate()}`.padStart(2, "0");
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const year = date.getFullYear();
+
+  const getDaysBetween2Dates = (date1, date2) =>
+    Math.round(Math.abs((date2 - date1) / (1000 * 60 * 60 * 24)));
+
+  const daysPassed = getDaysBetween2Dates(new Date(), date);
+
+  if (daysPassed === 0) return "Сегодня";
+  if (daysPassed === 1) return "Вчера";
+  if (daysPassed <= 4) return `${daysPassed} дня назад`;
+
+  return `${day}/${month}/${year}`;
+};
+
 // Показать транзакции
 
 const displayTransactions = function (account, sort = false) {
@@ -134,12 +153,8 @@ const displayTransactions = function (account, sort = false) {
 
   transacs.forEach(function (trans, index) {
     const transType = trans > 0 ? "deposit" : "withdrawal";
-
     const date = new Date(account.transactionsDates[index]);
-    const day = `${date.getDate()}`.padStart(2, "0");
-    const month = `${date.getMonth() + 1}`.padStart(2, "0");
-    const year = date.getFullYear();
-    const transDate = `${day}/${month}/${year}`;
+    const transDate = formatTransactionDate(date);
 
     const transactionRow = `
     <div class="transactions__row">
