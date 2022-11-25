@@ -123,7 +123,7 @@ const inputClosePin = document.querySelector(".form__input--pin");
 
 // Дата
 
-const formatTransactionDate = function (date) {
+const formatTransactionDate = function (date, locale) {
   const day = `${date.getDate()}`.padStart(2, "0");
   const month = `${date.getMonth() + 1}`.padStart(2, "0");
   const year = date.getFullYear();
@@ -137,7 +137,7 @@ const formatTransactionDate = function (date) {
   if (daysPassed === 1) return "Вчера";
   if (daysPassed <= 4) return `${daysPassed} дня назад`;
 
-  return `${day}/${month}/${year}`;
+  return new Intl.DateTimeFormat(locale).format(date);
 };
 
 // Показать транзакции
@@ -154,7 +154,7 @@ const displayTransactions = function (account, sort = false) {
   transacs.forEach(function (trans, index) {
     const transType = trans > 0 ? "deposit" : "withdrawal";
     const date = new Date(account.transactionsDates[index]);
-    const transDate = formatTransactionDate(date);
+    const transDate = formatTransactionDate(date, account.locale);
 
     const transactionRow = `
     <div class="transactions__row">
@@ -226,6 +226,12 @@ const updateUi = function (account) {
 
 let currentAccount;
 
+// Всегда залогинен
+
+// currentAccount = account1;
+// updateUi(currentAccount);
+// containerApp.style.opacity = 100;
+
 // События
 
 btnLogin.addEventListener("click", function (e) {
@@ -244,10 +250,18 @@ btnLogin.addEventListener("click", function (e) {
     }!`;
 
     const nowDate = new Date();
-    const day = `${nowDate.getDate()}`.padStart(2, "0");
-    const month = `${nowDate.getMonth() + 1}`.padStart(2, "0");
-    const year = nowDate.getFullYear();
-    labelDate.textContent = `${day}/${month}/${year}`;
+    const options = {
+      hour: "numeric",
+      minute: "numeric",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      weekday: "long",
+    };
+    labelDate.textContent = new Intl.DateTimeFormat(
+      currentAccount.locale,
+      options
+    ).format(nowDate);
 
     // Очистить ввод
 
