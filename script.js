@@ -140,6 +140,15 @@ const formatTransactionDate = function (date, locale) {
   return new Intl.DateTimeFormat(locale).format(date);
 };
 
+// Форматировать транзакции
+
+const formatCurrency = function (value, locale, currency) {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency,
+  }).format(value);
+};
+
 // Показать транзакции
 
 const displayTransactions = function (account, sort = false) {
@@ -156,10 +165,11 @@ const displayTransactions = function (account, sort = false) {
     const date = new Date(account.transactionsDates[index]);
     const transDate = formatTransactionDate(date, account.locale);
 
-    const formattedTrans = new Intl.NumberFormat(account.locale, {
-      style: "currency",
-      currency: account.currency,
-    }).format(trans);
+    const formattedTrans = formatCurrency(
+      trans,
+      account.locale,
+      account.currency
+    );
 
     const transactionRow = `
     <div class="transactions__row">
@@ -193,26 +203,42 @@ createNicknames(accounts);
 const displayBalance = function (account) {
   const balance = account.transactions.reduce((acc, trans) => acc + trans, 0);
   account.balance = balance;
-  labelBalance.textContent = `${balance.toFixed(2)}$`;
+  labelBalance.textContent = formatCurrency(
+    balance,
+    account.locale,
+    account.currency
+  );
 };
 
 const displayTotal = function (account) {
   const depositesTotal = account.transactions
     .filter((trans) => trans > 0)
     .reduce((acc, trans) => acc + trans, 0);
-  labelSumIn.textContent = `${depositesTotal.toFixed(2)}$`;
+  labelSumIn.textContent = formatCurrency(
+    depositesTotal,
+    account.locale,
+    account.currency
+  );
 
   const withdrawalsTotal = account.transactions
     .filter((trans) => trans < 0)
     .reduce((acc, trans) => acc + trans, 0);
-  labelSumOut.textContent = `${withdrawalsTotal.toFixed(2)}$`;
+  labelSumOut.textContent = formatCurrency(
+    withdrawalsTotal,
+    account.locale,
+    account.currency
+  );
 
   const interestTotal = account.transactions
     .filter((trans) => trans > 0)
     .map((depos) => (depos * account.interest) / 100)
     .filter((interest) => interest >= 5)
     .reduce((acc, interest) => acc + interest, 0);
-  labelSumInterest.textContent = `${interestTotal.toFixed(2)}$`;
+  labelSumInterest.textContent = formatCurrency(
+    interestTotal,
+    account.locale,
+    account.currency
+  );
 };
 
 const updateUi = function (account) {
@@ -232,10 +258,6 @@ const updateUi = function (account) {
 let currentAccount;
 
 // Всегда залогинен
-
-// currentAccount = account1;
-// updateUi(currentAccount);
-// containerApp.style.opacity = 100;
 
 // События
 
